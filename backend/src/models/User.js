@@ -4,9 +4,8 @@ const userSchema = new mongoose.Schema(
   {
     phone: {
       type: String,
-      required: true,
-      unique: true,
       trim: true,
+      sparse: true,
     },
     name: {
       type: String,
@@ -53,6 +52,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       sparse: true,
+    },
+    // For password-based auth
+    password: {
+      type: String,
+      select: false, // Never returned in queries by default
+    },
+    passwordResetToken: {
+      type: String,
+    },
+    passwordResetExpires: {
+      type: Date,
     },
   },
   { timestamps: true }

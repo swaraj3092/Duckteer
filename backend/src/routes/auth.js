@@ -1,5 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { User } from '../models/User.js';
 import { Doctor } from '../models/Doctor.js';
 import { protect } from '../middleware/auth.js';
@@ -12,6 +14,156 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 // Helper: sign a JWT token
 const signToken = (userId) =>
   jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+// ─── Password-Based Auth Routes ───────────────────────────────────────────────
+
+/**
+ * POST /api/auth/signup
+ * Body: { phone, name, password }
+ * Create a new account with phone + password.
+ */
+router.post('/signup', async (req, res) => {
+  try {
+    const { phone, name, password } = req.body;
+    if (!phone || !password || !name) {
+      return res.status(400).json({ message: 'Name, phone, and password are required.' });
+    }
+    if (phone.length !== 10) {
+      return res.status(400).json({ message: 'Enter a valid 10-digit phone number.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+    }
+
+    const existing = await User.findOne({ phone });
+    if (existing) {
+      return res.status(400).json({ message: 'An account with this phone number already exists. Please log in.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = await User.create({ phone, name, password: hashedPassword, isVerified: true });
+
+    const token = signToken(user._id);
+    res.status(201).json({
+      message: 'Account created successfully!',
+      token,
+      user: { id: user._id, phone: user.phone, name: user.name, role: user.role, patientId: user.patientId },
+    });
+  } catch (err) {
+    console.error('[signup]', err);
+    res.status(500).json({ message: 'Signup failed. Please try again.' });
+  }
+});
+
+/**
+ * POST /api/auth/login
+ * Body: { phone, password }
+ * Login with phone + password.
+ */
+router.post('/login', async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+    if (!phone || !password) {
+      return res.status(400).json({ message: 'Phone and password are required.' });
+    }
+
+    const user = await User.findOne({ phone }).select('+password');
+    if (!user || !user.password) {
+      return res.status(401).json({ message: 'Invalid phone number or password.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid phone number or password.' });
+    }
+
+    const token = signToken(user._id);
+    res.status(200).json({
+      message: 'Login successful!',
+      token,
+      user: { id: user._id, phone: user.phone, name: user.name, role: user.role, patientId: user.patientId },
+    });
+  } catch (err) {
+    console.error('[login]', err);
+    res.status(500).json({ message: 'Login failed. Please try again.' });
+  }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ * Body: { phone }
+ * Generates a reset token (in production, SMS this to the user).
+ */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { phone } = req.body;
+    if (!phone) return res.status(400).json({ message: 'Phone number is required.' });
+
+    const user = await User.findOne({ phone });
+    if (!user) return res.status(404).json({ message: 'No account found with this phone number.' });
+
+    // Generate a random 6-digit reset token
+    const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+    user.passwordResetToken = resetToken;
+    user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    await user.save();
+
+    // In production: send this via SMS (Twilio / MSG91)
+    console.log(`[RESET] Phone: +91${phone} → Reset Token: ${resetToken}`);
+
+    res.status(200).json({
+      message: 'Password reset code sent to your phone.',
+      // Only expose in dev — remove in production
+      ...(process.env.NODE_ENV !== 'production' && { resetToken }),
+    });
+  } catch (err) {
+    console.error('[forgot-password]', err);
+    res.status(500).json({ message: 'Failed to process request. Please try again.' });
+  }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * Body: { phone, resetToken, newPassword }
+ * Validates the token and sets a new password.
+ */
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { phone, resetToken, newPassword } = req.body;
+    if (!phone || !resetToken || !newPassword) {
+      return res.status(400).json({ message: 'Phone, reset code, and new password are required.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters.' });
+    }
+
+    const user = await User.findOne({
+      phone,
+      passwordResetToken: resetToken,
+      passwordResetExpires: { $gt: new Date() },
+    }).select('+password');
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset code. Please request a new one.' });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    const token = signToken(user._id);
+    res.status(200).json({
+      message: 'Password reset successfully! You are now logged in.',
+      token,
+      user: { id: user._id, phone: user.phone, name: user.name, role: user.role },
+    });
+  } catch (err) {
+    console.error('[reset-password]', err);
+    res.status(500).json({ message: 'Password reset failed. Please try again.' });
+  }
+});
+
 
 /**
  * POST /api/auth/send-otp
