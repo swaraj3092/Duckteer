@@ -1,0 +1,15 @@
+{
+  "name": "duckteer-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "mcp-server"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:mcp": "npm run start --workspace=mcp-server",
+    "install:all": "npm install"
+  }
+}
