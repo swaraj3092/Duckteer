@@ -76,7 +76,9 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.34.9",
-    "@rollup/rollup-linux-x64-musl": "4.34.9"
+    "@rollup/rollup-linux-x64-musl": "4.34.9",
+    "lightningcss-linux-x64-gnu": "1.29.3",
+    "lightningcss-linux-x64-musl": "1.29.3"
   },
   "peerDependencies": {
     "react": "18.3.1",
