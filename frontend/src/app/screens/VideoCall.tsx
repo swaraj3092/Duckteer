@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router";
 import { io, Socket } from "socket.io-client";
 import { API_BASE_URL } from "../api";
-import { Mic, MicOff, Video, VideoOff, MessageSquare, Phone, Maximize2, MoreVertical } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, MessageSquare, Phone, Maximize2, MoreVertical, ArrowLeft } from "lucide-react";
 import { DemoNav } from "../components/DemoNav";
 
 export function VideoCall() {

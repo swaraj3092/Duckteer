@@ -87,28 +87,24 @@ const seedData = async () => {
     // Seed Medical Records
     const records = [
       {
-        patientId: demoUser._id,
-        doctorId: insertedDoctors[0]._id,
+        patient: demoUser._id,
+        doctor: insertedDoctors[0]._id,
         doctorName: insertedDoctors[0].name,
         specialty: insertedDoctors[0].specialty,
-        date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+        date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         diagnosis: "Mild Hypertension",
         prescription: "Telmisartan 40mg once daily",
-        symptoms: ["Headache", "Dizziness"],
-        attachments: [],
-        type: "consultation"
+        notes: "Regular checkup needed in 3 months."
       },
       {
-        patientId: demoUser._id,
-        doctorId: insertedDoctors[2]._id,
+        patient: demoUser._id,
+        doctor: insertedDoctors[2]._id,
         doctorName: insertedDoctors[2].name,
         specialty: insertedDoctors[2].specialty,
-        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         diagnosis: "Viral Fever",
         prescription: "Paracetamol 500mg SOS, Rest for 3 days",
-        symptoms: ["High fever", "Body ache", "Weakness"],
-        attachments: [],
-        type: "consultation"
+        notes: "Follow up if fever persists beyond 5 days."
       }
     ];
 
