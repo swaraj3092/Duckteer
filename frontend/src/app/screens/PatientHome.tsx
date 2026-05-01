@@ -649,7 +649,7 @@ export function PatientHome() {
                       <Button
                         onClick={() => setShowPrescription({
                           patient: {
-                            name: "Demo User",
+                            name: JSON.parse(localStorage.getItem('user') || '{}').name || "Demo User",
                             gender: userVitals.gender,
                             age: "28",
                             vitals: `${userVitals.height}cm / ${userVitals.weight}kg`
@@ -659,7 +659,12 @@ export function PatientHome() {
                             specialty: message.analysis.specialty,
                             reg: "REG-2026-X99"
                           },
-                          analysis: message.analysis
+                          analysis: message.analysis,
+                          medications: [
+                            { name: "Azithromycin 500mg", dosage: "1 tab / 2 times a day", timing: "After food", icon: "💊" },
+                            { name: "Pantoprazole 40mg", dosage: "1 tab / Once a day", timing: "Before breakfast", icon: "💊" },
+                            { name: "ORS Solution", dosage: "As needed", timing: "For hydration", icon: "🥤" }
+                          ]
                         })}
                         className="w-full bg-[#e8f4fd] hover:bg-[#d1e9fb] text-[#0A66C2] text-xs h-10 rounded-xl flex items-center justify-center gap-2 border border-[#0A66C2]/20"
                       >
@@ -1025,8 +1030,30 @@ export function PatientHome() {
                     <div className="text-5xl font-serif text-gray-900 mb-6 italic select-none">Rx</div>
                     
                     <div className="mb-8">
-                      <h5 className="text-[11px] font-black text-[#0A66C2] uppercase mb-3">Clinical Impression & Advice</h5>
-                      <p className="text-[13px] text-gray-800 leading-relaxed font-medium mb-4">
+                      <h5 className="text-[11px] font-black text-[#0A66C2] uppercase mb-3 tracking-widest border-l-4 border-[#0A66C2] pl-3">Medication & Regimen</h5>
+                      <div className="space-y-4">
+                        {showPrescription.medications?.map((m: any, i: number) => (
+                          <div key={i} className="flex items-start gap-3 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                            <span className="text-xl">{m.icon}</span>
+                            <div className="flex-1">
+                              <p className="text-sm font-bold text-gray-900">{m.name}</p>
+                              <div className="flex gap-4 mt-1">
+                                <p className="text-[11px] text-gray-500 flex items-center gap-1.5 font-medium">
+                                  <span className="text-gray-400">🕒</span> {m.dosage}
+                                </p>
+                                <p className="text-[11px] text-[#0A66C2] flex items-center gap-1.5 font-bold italic">
+                                  <span className="text-[#0A66C2]/40">🍽️</span> {m.timing}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-8">
+                      <h5 className="text-[11px] font-black text-[#0A66C2] uppercase mb-3 border-l-4 border-[#0A66C2] pl-3">Clinical Impression & Advice</h5>
+                      <p className="text-[13px] text-gray-800 leading-relaxed font-medium mb-4 italic">
                         {showPrescription.analysis.clinicalReasoning}
                       </p>
                     </div>

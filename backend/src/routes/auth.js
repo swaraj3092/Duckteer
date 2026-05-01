@@ -68,8 +68,11 @@ router.post('/login', async (req, res) => {
     }
 
     const user = await User.findOne({ phone }).select('+password');
-    if (!user || !user.password) {
-      return res.status(401).json({ message: 'Invalid phone number or password.' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please sign up first.', code: 'USER_NOT_FOUND' });
+    }
+    if (!user.password) {
+      return res.status(401).json({ message: 'Invalid password. Please try again.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

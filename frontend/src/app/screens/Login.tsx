@@ -41,6 +41,12 @@ export function Login() {
       const data = await res.json();
       if (res.ok) {
         saveAndNavigate(data);
+      } else if (data.code === 'USER_NOT_FOUND') {
+        // Automatically switch to signup mode
+        setMode("signup");
+        setPhone(phone); // Keep the phone number filled
+        setError("Account not found. Please sign up first.");
+        setSuccess("");
       } else {
         setError(data.message || "Login failed.");
       }
