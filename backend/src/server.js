@@ -111,6 +111,15 @@ app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/fhir', fhirRoutes);
 
+// Welcome route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Welcome to Duckteer API — Telemedicine for Bharat',
+    docs: 'https://github.com/swaraj3092/Duckteer',
+    status: 'Live'
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
