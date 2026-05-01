@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router";
 import { Shield, ArrowLeft, Stethoscope, Briefcase, Languages, Banknote } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { DemoNav } from "../components/DemoNav";
+import { API_BASE_URL } from "../api";
 
 export function DoctorSetup() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export function DoctorSetup() {
       // Get the token. If doing this in the real flow, it would be from localStorage
       const token = localStorage.getItem("token") || ""; 
       
-      const res = await fetch("http://localhost:5000/api/auth/doctor/register", {
+      const res = await fetch(`${API_BASE_URL}/auth/doctor/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

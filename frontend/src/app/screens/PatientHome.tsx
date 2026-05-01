@@ -22,6 +22,7 @@ import {
 import { Button } from "../components/ui/button";
 import { DemoNav } from "../components/DemoNav";
 import { motion, AnimatePresence } from "motion/react";
+import { API_BASE_URL } from "../api";
 
 // ── Language Configs ──────────────────────────────────────────────────────────
 const LANGUAGES = [
@@ -33,7 +34,7 @@ const LANGUAGES = [
   { code: "te-IN", label: "తెలుగు", shortLabel: "తె", bcp47: "te" },
 ];
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = API_BASE_URL;
 
 type Message = {
   id: string;

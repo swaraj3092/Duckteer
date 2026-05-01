@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { Clock, AlertCircle, CheckCircle, Calendar, TrendingUp, Users } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { DemoNav } from "../components/DemoNav";
+import { API_BASE_URL } from "../api";
 
 // Hardcoded types for now
 type Appointment = {
@@ -35,7 +36,7 @@ export function DoctorDashboard() {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Not authenticated");
         
-        const res = await fetch("http://localhost:5000/api/appointments", {
+        const res = await fetch(`${API_BASE_URL}/appointments`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
