@@ -109,7 +109,7 @@ const runGeminiTriage = async (text) => {
 
   try {
     const genAI = new GoogleGenAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `Analyze these patient symptoms and provide a structured triage assessment. Symptoms: "${text}"`;
     
@@ -209,6 +209,24 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
           },
           required: ["specialty"],
+        },
+      },
+      {
+        name: "recommend_handover",
+        description: "A2A Handover Tool: Recommends the next specialized agent (e.g., BookingAgent, PharmacyAgent, or EmergencyResponse) based on triage urgency and specialty. Essential for multi-agent collaborative workflows.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            urgencyScore: {
+              type: "integer",
+              description: "The urgency score from 1-10 (e.g., from triage_symptoms tool)",
+            },
+            specialty: {
+              type: "string",
+              description: "The medical specialty identified during triage.",
+            },
+          },
+          required: ["urgencyScore", "specialty"],
         },
       },
     ],
@@ -316,6 +334,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     return {
       content: [{ type: "text", text: JSON.stringify(fhirBundle, null, 2) }],
+    };
+  }
+
+  if (request.params.name === "recommend_handover") {
+    const { urgencyScore, specialty } = z.object({ 
+      urgencyScore: z.number(), 
+      specialty: z.string() 
+    }).parse(request.params.arguments);
+
+    let handoverRecommendation = {
+      targetAgent: "GeneralPhysicianAgent",
+      priority: "Normal",
+      reason: "Routine follow-up recommended."
+    };
+
+    if (urgencyScore >= 8) {
+      handoverRecommendation = {
+        targetAgent: "EmergencyResponseAgent",
+        priority: "CRITICAL",
+        reason: `Urgent ${specialty} intervention required immediately. Handing over to Emergency Response.`
+      };
+    } else if (urgencyScore >= 5) {
+      handoverRecommendation = {
+        targetAgent: "BookingSpecialistAgent",
+        priority: "High",
+        reason: `Patient requires a consultation with a ${specialty}. Handing over to Booking Agent for slot allocation.`
+      };
+    } else {
+      handoverRecommendation = {
+        targetAgent: "PharmacySupportAgent",
+        priority: "Low",
+        reason: "Symptom management via over-the-counter or previously prescribed medication suggested."
+      };
+    }
+
+    return {
+      content: [{ 
+        type: "text", 
+        text: JSON.stringify({
+          ...handoverRecommendation,
+          protocol: "A2A-Handover-v1",
+          contextPropagation: "SHARP"
+        }, null, 2) 
+      }],
     };
   }
 

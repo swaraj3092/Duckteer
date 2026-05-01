@@ -142,7 +142,7 @@ export function PatientHome() {
           {
             id: "greeting",
             type: "ai",
-            text: "Hello! 👋 I'm your MediConnect AI health assistant. Tell me your symptoms — you can speak in your language or type here. I'll analyze them and connect you with the right specialist.",
+            text: "Hello! 👋 I'm your Duckteer AI health assistant. Tell me your symptoms — you can speak in your language or type here. I'll analyze them and connect you with the right specialist.",
           },
         ]);
       }

@@ -18,11 +18,7 @@ const optionalAuth = async (req, res, next) => {
   next();
 };
 
-// Apply optionalAuth to session and message routes
-router.post('/session', optionalAuth);
-router.get('/:sessionId', protect);
-router.post('/:sessionId/message', upload.array('image', 2), optionalAuth);
-router.post('/quick-triage', optionalAuth);
+// Note: middleware is applied inline in the route definitions below
 
 // ─── Enhanced AI Symptom Analysis Engine ──────────────────────────────────────
 
@@ -230,18 +226,18 @@ const runGeminiAnalysis = async (text, language = 'en', imageDatas = [], context
  * POST /api/chat/session
  * Creates a new chat session.
  */
-router.post('/session', async (req, res) => {
+router.post('/session', optionalAuth, async (req, res) => {
   try {
     const sessionId = uuidv4();
     const { language } = req.body;
 
     const greetings = {
-      en: "Hello! 👋 I'm your MediConnect AI health assistant. Tell me your symptoms — you can speak in your language or type here. I'll analyze them and connect you with the right specialist.",
-      hi: "नमस्ते! 👋 मैं आपका MediConnect AI स्वास्थ्य सहायक हूं। अपने लक्षण बताएं — आप अपनी भाषा में बोल सकते हैं। मैं उनका विश्लेषण करूंगा और आपको सही विशेषज्ञ से जोड़ूंगा।",
-      mr: "नमस्कार! 👋 मी तुमचा MediConnect AI आरोग्य सहाय्यक आहे। तुमची लक्षणे सांगा — तुम्ही तुमच्या भाषेत बोलू शकता. मी त्यांचे विश्लेषण करेन आणि तुम्हाला योग्य तज्ञांशी जोडेन.",
-      bn: "নমস্কার! 👋 আমি আপনার MediConnect AI স্বাস্থ্য সহায়ক। আপনার উপসর্গগুলি বলুন — আপনি আপনার ভাষায় বলতে পারেন। আমি বিশ্লেষণ করব এবং সঠিক বিশেষজ্ঞের সাথে সংযুক্ত করব।",
-      ta: "வணக்கம்! 👋 நான் உங்கள் MediConnect AI சுகாதார உதவியாளர். உங்கள் அறிகுறிகளை சொல்லுங்கள் — தமிழில் பேசலாம்.",
-      te: "నమస్కారం! 👋 నేను మీ MediConnect AI ఆరోగ్య సహాయకుడిని. మీ లక్షణాలు చెప్పండి — తెలుగులో మాట్లాడవచ్చు.",
+      en: "Hello! 👋 I'm your Duckteer AI health assistant. Tell me your symptoms — you can speak in your language or type here. I'll analyze them and connect you with the right specialist.",
+      hi: "नमस्ते! 👋 मैं आपका Duckteer AI स्वास्थ्य सहायक हूं। अपने लक्षण बताएं — आप अपनी भाषा में बोल सकते हैं। मैं उनका विश्लेषण करूंगा और आपको सही विशेषज्ञ से जोड़ूंगा।",
+      mr: "नमस्कार! 👋 मी तुमचा Duckteer AI आरोग्य सहाय्यक आहे। तुमची लक्षणे सांगा — तुम्ही तुमच्या भाषेत बोलू शकता. मी त्यांचे विश्लेषण करेन आणि तुम्हाला योग्य तज्ञांशी जोडेन.",
+      bn: "নমস্কার! 👋 আমি আপনার Duckteer AI স্বাস্থ্য সহায়ক। আপনার উপসর্গগুলি বলুন — আপনি আপনার ভাষায় বলতে পারেন। আমি বিশ্লেষণ করব এবং সঠিক বিশেষজ্ঞের সাথে সংযুক্ত করব।",
+      ta: "வணக்கம்! 👋 நான் உங்கள் Duckteer AI சுகாதார உதவியாளர். உங்கள் அறிகுறிகளை சொல்லுங்கள் — தமிழில் பேசலாம்.",
+      te: "నమస్కారం! 👋 నేను మీ Duckteer AI ఆరోగ్య సహాయకుడిని. మీ లక్షణాలు చెప్పండి — తెలుగులో మాట్లాడవచ్చు.",
     };
 
     const greeting = {
@@ -261,7 +257,7 @@ router.post('/session', async (req, res) => {
 /**
  * GET /api/chat/:sessionId
  */
-router.get('/:sessionId', async (req, res) => {
+router.get('/:sessionId', protect, async (req, res) => {
   try {
     const messages = await ChatMessage.find({
       sessionId: req.params.sessionId,
@@ -281,7 +277,7 @@ router.get('/:sessionId', async (req, res) => {
  * Saves user message, runs AI symptom analysis with urgency scoring,
  * saves AI reply, and returns analysis + matching doctors.
  */
-router.post('/:sessionId/message', async (req, res) => {
+router.post('/:sessionId/message', upload.array('image', 2), optionalAuth, async (req, res) => {
   try {
     const { text, language, context } = req.body;
     if (!text || !text.trim()) {
@@ -362,7 +358,7 @@ router.post('/:sessionId/message', async (req, res) => {
  * Quick triage without session — returns urgency + recommended specialty instantly.
  * Used for the urgency card preview.
  */
-router.post('/quick-triage', async (req, res) => {
+router.post('/quick-triage', optionalAuth, async (req, res) => {
   try {
     const { symptoms, language } = req.body;
     if (!symptoms) {
