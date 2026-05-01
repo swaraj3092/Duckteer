@@ -77,7 +77,7 @@ export function DoctorSetup() {
           </Link>
           <div>
             <h1 className="text-2xl" style={{ fontWeight: 600 }}>Doctor Registration</h1>
-            <p className="text-white/80 text-sm mt-1">Join MediConnect as a Specialist</p>
+            <p className="text-white/80 text-sm mt-1">Join Duckteer as a Specialist</p>
           </div>
         </div>
       </div>

@@ -61,12 +61,12 @@ export function DemoNav() {
             {/* Mobile Header with Close Button */}
             <div className="p-6 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                  <span className="text-[#084a8f] font-bold text-xl">M</span>
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1 shadow-md">
+                  <img src="/favicon.png" alt="Duckteer" className="w-full h-full object-contain" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-lg leading-tight">MediConnect</h2>
-                  <p className="text-xs text-blue-200">AI Health Dashboard</p>
+                  <h2 className="font-black text-lg leading-tight tracking-tight text-white">Duckteer</h2>
+                  <p className="text-[10px] text-blue-200 uppercase tracking-widest font-bold">Health Dashboard</p>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="text-white/60 p-2">
@@ -92,12 +92,12 @@ export function DemoNav() {
       {/* Desktop Sidebar (Always Visible) */}
       <div className="hidden md:flex fixed top-0 left-0 bottom-0 w-64 z-50 bg-[#084a8f] text-white shadow-xl flex-col">
         <div className="p-6 border-b border-white/10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-            <span className="text-[#084a8f] font-bold text-xl">M</span>
+          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1 shadow-md">
+            <img src="/favicon.png" alt="Duckteer" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h2 className="font-bold text-lg leading-tight">MediConnect</h2>
-            <p className="text-xs text-blue-200">AI Health Dashboard</p>
+            <h2 className="font-black text-lg leading-tight tracking-tight text-white">Duckteer</h2>
+            <p className="text-[10px] text-blue-200 uppercase tracking-widest font-bold">Health Dashboard</p>
           </div>
         </div>
         

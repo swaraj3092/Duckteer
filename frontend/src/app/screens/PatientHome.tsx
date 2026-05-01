@@ -150,7 +150,7 @@ export function PatientHome() {
         {
           id: "greeting",
           type: "ai",
-          text: "Hello! 👋 I'm your MediConnect AI health assistant. Tell me your symptoms — you can speak in your language or type here.",
+          text: "Hello! 👋 I'm your Duckteer AI health assistant. Tell me your symptoms — you can speak in your language or type here.",
         },
       ]);
     }
@@ -393,7 +393,7 @@ export function PatientHome() {
               <span className="text-white/80 text-xs">AI Health Assistant — Live</span>
             </div>
             <h1 className="text-2xl mt-1" style={{ fontWeight: 600 }}>
-              MediConnect AI
+              Duckteer AI
             </h1>
             <p className="text-white/70 text-sm mt-1">
               🏥 Speak your symptoms in your language

@@ -67,13 +67,15 @@ export function Login() {
       <div className="relative z-10 flex flex-col flex-1 px-6 py-12">
         {/* Logo & Header */}
         <div className="text-center mb-12 mt-8">
-          <div className="w-20 h-20 bg-white rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#0A66C2] to-[#084a8f] rounded-2xl flex items-center justify-center">
-              <Shield className="w-7 h-7 text-white" />
-            </div>
+          <div className="w-24 h-24 bg-white rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl overflow-hidden p-3">
+            <img 
+              src="/favicon.png" 
+              alt="Duckteer Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
-          <h1 className="text-3xl text-white mb-3" style={{ fontWeight: 600 }}>
-            Welcome to MediConnect
+          <h1 className="text-4xl text-white mb-3" style={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
+            Duckteer
           </h1>
           <p className="text-white/80 text-base">
             Connect with super-specialists from anywhere
