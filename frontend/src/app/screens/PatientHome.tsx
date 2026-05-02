@@ -114,6 +114,7 @@ export function PatientHome() {
     // Start a chat session
     startSession();
     return () => clearInterval(keepAlive);
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
