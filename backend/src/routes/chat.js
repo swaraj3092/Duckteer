@@ -179,7 +179,22 @@ const runGeminiAnalysis = async (text, language = 'en', imageDatas = [], context
       model: 'gemini-2.5-flash',
       contents: [{ role: 'user', parts }],
       config: {
-        systemInstruction: "You are an expert medical AI triage assistant. Your job is to analyze symptoms (text and images) provided by the user, determine the most relevant medical specialty to consult, assess the urgency, and ask follow-up questions. If an image is provided (e.g., a wound, rash, or swelling), analyze it carefully. IMPORTANT: Your output MUST be a valid JSON object matching the provided schema exactly. Always respond in the requested language for the 'responseMessage'. The JSON keys must always be in English. Be empathetic and clear. If you are unsure, still provide a best-guess JSON instead of failing.",
+        systemInstruction: `You are Duckteer AI — an expert medical triage assistant built for Tier 2/3 India. Your job is to:
+1. Analyze symptoms (text and/or images) from the patient.
+2. Determine the most relevant medical specialty and urgency score (1-10).
+3. ALWAYS recommend specific medicines that are safe and commonly available in India (OTC or general prescriptions). For example:
+   - Fever → Paracetamol 500mg, Ibuprofen 400mg
+   - Cold/cough → Cetirizine 10mg, Benadryl cough syrup
+   - Acidity → Pantoprazole 40mg, Eno antacid
+   - Pain → Combiflam, Diclofenac gel
+   - Diarrhea → ORS, Norflox-TZ, Metronidazole 400mg
+   - Skin rash → Betamethasone cream, Cetirizine
+   - Always include dosage and timing (e.g. "twice daily after food for 5 days")
+4. Include a DISCLAIMER in the responseMessage: "⚠️ These are general suggestions. Please consult a doctor before taking any medication."
+5. For EMERGENCIES (urgency ≥ 8), skip medicines and say "Seek emergency care immediately."
+6. If an image is provided (wound, rash, swelling), analyze it carefully in clinicalReasoning.
+7. Always respond in the patient's language for the 'responseMessage'. JSON keys must always be in English.
+8. Be empathetic, clear, and practical — you are the only healthcare guidance for millions in rural India.`,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -193,7 +208,8 @@ const runGeminiAnalysis = async (text, language = 'en', imageDatas = [], context
             matchedSymptoms: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of key symptoms extracted from the text" },
             confidence: { type: Type.NUMBER, description: "Confidence score of the analysis (0.0 to 1.0)" },
             clinicalReasoning: { type: Type.STRING, description: "A detailed clinical explanation of why this specialty and urgency were chosen, citing specific symptoms or image findings." },
-            responseMessage: { type: Type.STRING, description: "A conversational, empathetic response directed at the patient. Should include the urgency, recommended specialty, and follow-up questions. MUST be in the requested language." }
+            medicines: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of recommended medicines with dosage and timing (e.g. 'Paracetamol 500mg - twice daily after food for 5 days'). Empty array for emergencies." },
+            responseMessage: { type: Type.STRING, description: "A conversational, empathetic response directed at the patient. Should include the urgency, recommended specialty, medicine suggestions with dosage, and follow-up questions. MUST be in the requested language. MUST include disclaimer: ⚠️ These are general suggestions. Please consult a doctor before taking any medication." }
           },
           required: ["specialty", "allSpecialties", "urgencyScore", "urgencyLevel", "category", "followUpQuestions", "matchedSymptoms", "confidence", "clinicalReasoning", "responseMessage"]
         }
