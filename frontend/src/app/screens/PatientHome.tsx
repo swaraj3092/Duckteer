@@ -100,6 +100,10 @@ export function PatientHome() {
 
   // ── Initialize ─────────────────────────────────────────────────────────────
   useEffect(() => {
+    // Keep-alive ping to prevent Render cold start (pings every 10 minutes)
+    const keepAlive = setInterval(() => {
+      fetch(`${API_BASE.replace('/api', '')}/api/health`).catch(() => {});
+    }, 10 * 60 * 1000);
     // Check Web Speech API support
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -108,7 +112,7 @@ export function PatientHome() {
     }
     // Start a chat session
     startSession();
-  }, []);
+    return () => clearInterval(keepAlive);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -323,11 +327,16 @@ export function PatientHome() {
         setLatestAnalysis(data.analysis);
         setLatestDoctors(data.matchingDoctors || []);
       } else {
-        // Fallback: local analysis if backend unavailable
+        // Show real error from backend instead of a vague message
+        let errorText = "⚠️ The server returned an error. Please try again.";
+        try {
+          const errData = await res.json();
+          errorText = `⚠️ Server Error: ${errData.message || res.statusText}`;
+        } catch {}
         const fallbackMsg: Message = {
           id: "ai-" + Date.now(),
           type: "ai",
-          text: "I'm having trouble connecting to the analysis service. Please try again in a moment.",
+          text: errorText,
         };
         setMessages((prev) => [...prev, fallbackMsg]);
       }
