@@ -159,7 +159,10 @@ const runGeminiAnalysis = async (text, language = 'en', imageDatas = [], context
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     
-    const parts = [{ text: `Analyze these symptoms and provide a triage assessment. Language: ${language}. \n${context ? `Patient Context: ${context}` : ''} \nSymptoms: "${text}"` }];
+    const languageNames = { en: 'English', hi: 'Hindi', mr: 'Marathi', bn: 'Bengali', ta: 'Tamil', te: 'Telugu', od: 'Odia' };
+    const languageName = languageNames[language] || 'English';
+
+    const parts = [{ text: `Analyze these symptoms and provide a triage assessment.\nIMPORTANT: You MUST write the 'responseMessage' field STRICTLY in ${languageName} language ONLY. Do NOT use any other language.\n${context ? `Patient Context: ${context}` : ''}\nSymptoms: "${text}"` }];
     
     if (imageDatas && imageDatas.length > 0) {
       if (imageDatas.length > 1) {
@@ -194,7 +197,8 @@ const runGeminiAnalysis = async (text, language = 'en', imageDatas = [], context
 5. For EMERGENCIES (urgency ≥ 8), skip medicines and say "Seek emergency care immediately."
 6. If an image is provided (wound, rash, swelling), analyze it carefully in clinicalReasoning.
 7. Always respond in the patient's language for the 'responseMessage'. JSON keys must always be in English.
-8. Be empathetic, clear, and practical — you are the only healthcare guidance for millions in rural India.`,
+8. Be empathetic, clear, and practical — you are the only healthcare guidance for millions in rural India.
+⚠️ CRITICAL LANGUAGE RULE: The 'responseMessage' field MUST be written ONLY in the language specified in the user's prompt. If the user says "STRICTLY in English", write ONLY in English. Never mix languages. Never auto-detect language from symptoms — always follow the explicit language instruction.`,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -244,6 +248,7 @@ router.post('/session', optionalAuth, async (req, res) => {
       bn: "নমস্কার! 👋 আমি আপনার Duckteer AI স্বাস্থ্য সহায়ক। আপনার উপসর্গগুলি বলুন — আপনি আপনার ভাষায় বলতে পারেন। আমি বিশ্লেষণ করব এবং সঠিক বিশেষজ্ঞের সাথে সংযুক্ত করব।",
       ta: "வணக்கம்! 👋 நான் உங்கள் Duckteer AI சுகாதார உதவியாளர். உங்கள் அறிகுறிகளை சொல்லுங்கள் — தமிழில் பேசலாம்.",
       te: "నమస్కారం! 👋 నేను మీ Duckteer AI ఆరోగ్య సహాయకుడిని. మీ లక్షణాలు చెప్పండి — తెలుగులో మాట్లాడవచ్చు.",
+      od: "ନମସ୍କାର! 👋 ମୁଁ ଆପଣଙ୍କର Duckteer AI ସ୍ୱାସ୍ଥ୍ୟ ସହାୟକ। ଆପଣଙ୍କ ଲକ୍ଷଣ କୁହନ୍ତୁ — ଆପଣ ଓଡ଼ିଆରେ କହିପାରିବେ। ମୁଁ ବିଶ୍ଳେଷଣ କରି ସଠିକ ବିଶେଷଜ୍ଞଙ୍କ ସହ ଯୋଡ଼ିବି।",
     };
 
     const greeting = {

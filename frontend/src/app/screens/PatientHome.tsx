@@ -28,6 +28,7 @@ import { API_BASE_URL } from "../api";
 const LANGUAGES = [
   { code: "en-IN", label: "English", shortLabel: "EN", bcp47: "en" },
   { code: "hi-IN", label: "हिंदी", shortLabel: "हि", bcp47: "hi" },
+  { code: "or-IN", label: "ଓଡ଼ିଆ", shortLabel: "ଓ", bcp47: "od" },
   { code: "mr-IN", label: "मराठी", shortLabel: "मर", bcp47: "mr" },
   { code: "bn-IN", label: "বাংলা", shortLabel: "বা", bcp47: "bn" },
   { code: "ta-IN", label: "தமிழ்", shortLabel: "த", bcp47: "ta" },
