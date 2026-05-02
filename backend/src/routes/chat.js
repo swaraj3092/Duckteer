@@ -203,19 +203,9 @@ const runGeminiAnalysis = async (text, language = 'en', imageDatas = [], context
     const data = JSON.parse(response.text);
     return data;
   } catch (error) {
-    console.error("Gemini AI Analysis failed:", error);
-    // Fallback if Gemini fails
-    return {
-      specialty: 'General Physician',
-      allSpecialties: ['General Physician'],
-      urgencyScore: 3,
-      urgencyLevel: 'low',
-      category: 'general',
-      followUpQuestions: ['Can you provide more details?'],
-      matchedSymptoms: [],
-      confidence: 0.5,
-      responseMessage: "I'm having trouble analyzing this right now, but I recommend consulting a General Physician."
-    };
+    console.error("Gemini AI Analysis failed:", error.message, error.stack);
+    // Re-throw so the route handler returns a real 500 error to the frontend
+    throw error;
   }
 };
 
@@ -348,7 +338,7 @@ router.post('/:sessionId/message', upload.array('image', 2), optionalAuth, async
     });
   } catch (err) {
     console.error('[POST /chat/:sessionId/message]', err);
-    res.status(500).json({ message: 'Failed to process message.' });
+    res.status(500).json({ message: err.message, stack: err.stack });
   }
 });
 
@@ -387,7 +377,7 @@ router.post('/quick-triage', optionalAuth, async (req, res) => {
     });
   } catch (err) {
     console.error('[POST /chat/quick-triage]', err);
-    res.status(500).json({ message: 'Triage failed.' });
+    res.status(500).json({ message: err.message, stack: err.stack });
   }
 });
 
