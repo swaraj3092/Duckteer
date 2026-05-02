@@ -249,7 +249,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name === "find_doctors_by_specialty") {
     const { specialty } = z.object({ specialty: z.string() }).parse(request.params.arguments);
     
-    const API_BASE = process.env.API_BASE || "http://localhost:5000/api";
+    const API_BASE = process.env.API_BASE || "http://192.168.29.190:5000/api";
     
     try {
       const response = await fetch(`${API_BASE}/doctors?specialty=${encodeURIComponent(specialty)}`);
@@ -280,7 +280,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       fhirToken: z.string().optional()
     }).parse(request.params.arguments);
     
-    const API_BASE = process.env.API_BASE || "http://localhost:5000/api";
+    const API_BASE = process.env.API_BASE || "http://192.168.29.190:5000/api";
     const AUTH_TOKEN = fhirToken || process.env.AUTH_TOKEN;
 
     if (AUTH_TOKEN) {

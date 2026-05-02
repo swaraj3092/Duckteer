@@ -145,7 +145,8 @@ app.use((err, req, res, next) => {
 
 // ── Start Server ──────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📡 Local Network: http://192.168.29.190:${PORT}`);
   console.log(`📡 Socket.io ready for video signaling`);
 });
