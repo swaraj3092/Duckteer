@@ -616,6 +616,30 @@ export function PatientHome() {
                           </span>
                         </div>
 
+                        {/* ── Suggested Medicines ─────────────────────────── */}
+                        {message.analysis.medicines && message.analysis.medicines.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-white/20">
+                            <p className="text-[10px] text-white/80 font-bold uppercase mb-2 flex items-center gap-1">
+                              💊 Suggested Medicines
+                            </p>
+                            <div className="space-y-2">
+                              {message.analysis.medicines.map((med: string, i: number) => (
+                                <div key={i} className="bg-white/10 backdrop-blur-sm p-2 rounded-lg border border-white/10 flex items-start gap-2">
+                                  <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] mt-0.5 flex-shrink-0">
+                                    {i + 1}
+                                  </div>
+                                  <p className="text-xs text-white leading-relaxed">
+                                    {med}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                            <p className="mt-3 text-[9px] text-white/60 italic leading-tight">
+                              ⚠️ These are general suggestions. Please consult a doctor before taking any medication.
+                            </p>
+                          </div>
+                        )}
+
                         {/* ── A2A Collaboration Simulation ────────────────── */}
                         {message.analysis.urgencyLevel === "high" && (
                           <div className="mt-4 pt-4 border-t border-red-200">
@@ -671,10 +695,16 @@ export function PatientHome() {
                             reg: "REG-2026-X99"
                           },
                           analysis: message.analysis,
-                          medications: [
-                            { name: "Azithromycin 500mg", dosage: "1 tab / 2 times a day", timing: "After food", icon: "💊" },
-                            { name: "Pantoprazole 40mg", dosage: "1 tab / Once a day", timing: "Before breakfast", icon: "💊" },
-                            { name: "ORS Solution", dosage: "As needed", timing: "For hydration", icon: "🥤" }
+                          medications: message.analysis.medicines ? message.analysis.medicines.map((m: string) => {
+                            const [name, ...details] = m.split(' - ');
+                            return { 
+                              name: name || m, 
+                              dosage: details.join(' - ') || "As directed", 
+                              timing: "Check clinical advice", 
+                              icon: m.toLowerCase().includes('syrup') ? "🥤" : "💊" 
+                            };
+                          }) : [
+                            { name: "General Advice", dosage: "Follow triage", timing: "Immediate", icon: "📋" }
                           ]
                         })}
                         className="w-full bg-[#e8f4fd] hover:bg-[#d1e9fb] text-[#0A66C2] text-xs h-10 rounded-xl flex items-center justify-center gap-2 border border-[#0A66C2]/20"
