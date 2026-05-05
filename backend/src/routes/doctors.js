@@ -150,6 +150,9 @@ router.get('/', async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: 'Doctor not found (Invalid ID format).' });
+    }
     const doctor = await Doctor.findById(req.params.id).select('-__v');
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found.' });
@@ -169,6 +172,12 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/slots', async (req, res) => {
   try {
     const { date } = req.query;
+    
+    // Check if ID is a valid MongoDB ObjectId to prevent CastError
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ message: 'Doctor not found (Invalid ID format).' });
+    }
+
     const doctor = await Doctor.findById(req.params.id).select('availability name specialty');
 
     if (!doctor) {
